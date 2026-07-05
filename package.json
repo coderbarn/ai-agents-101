@@ -1,0 +1,13 @@
+{
+  "name": "ai-agents-101",
+  "version": "1.0.0",
+  "description": "A repository to learn how to build AI agents and share teaching examples.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "hello": "node 1_hello_world.mjs"
+  },
+  "dependencies": {
+    "openai": "^5.0.0"
+  }
+}
