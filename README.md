@@ -33,10 +33,10 @@ python3 -m venv myenv
 source myenv/bin/activate
 ```
 
-Install the Python OpenAI SDK:
+Install the Python requirements:
 
 ```bash
-pip install openai
+pip install -r requirements.txt
 ```
 
 Set your OpenAI API key in the environment:
