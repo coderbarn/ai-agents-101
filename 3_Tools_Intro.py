@@ -14,9 +14,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 docs: https://platform.openai.com/docs/guides/function-calling
 """
 
-parser = argparse.ArgumentParser(description="Get weather for a latitude and longitude.")
-parser.add_argument("latitude", type=float, help="Latitude for the weather lookup.")
-parser.add_argument("longitude", type=float, help="Longitude for the weather lookup.")
+parser = argparse.ArgumentParser(description="Get weather for a city.")
+parser.add_argument("city", help="City name for the weather lookup.")
 args = parser.parse_args()
 
 # --------------------------------------------------------------
@@ -30,7 +29,10 @@ def get_weather(latitude, longitude):
         f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
     )
     data = response.json()
-    return data["current"]
+    current_weather = data["current"]
+    temperature_celsius = current_weather["temperature_2m"]
+    current_weather["temperature_2m_fahrenheit"] = (temperature_celsius * 9 / 5) + 32
+    return current_weather
 
 
 # --------------------------------------------------------------
@@ -42,7 +44,7 @@ tools = [
         "type": "function",
         "function": {
             "name": "get_weather",
-            "description": "Get current temperature for provided coordinates in celsius.",
+            "description": "Get current temperature for provided coordinates in Celsius and Fahrenheit.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -63,7 +65,7 @@ messages = [
     {"role": "system", "content": system_prompt},
     {
         "role": "user",
-        "content": f"What's the weather today at latitude {args.latitude} and longitude {args.longitude}?",
+        "content": f"What's the weather like in {args.city} today? Use the city's latitude and longitude to call the weather tool, then show the temperature in both Celsius and Fahrenheit.",
     },
 ]
 
@@ -93,8 +95,6 @@ def call_function(name, args):
 for tool_call in completion.choices[0].message.tool_calls:
     name = tool_call.function.name
     tool_args = json.loads(tool_call.function.arguments)
-    tool_args["latitude"] = args.latitude
-    tool_args["longitude"] = args.longitude
     messages.append(completion.choices[0].message)
 
     result = call_function(name, tool_args)
@@ -108,8 +108,11 @@ for tool_call in completion.choices[0].message.tool_calls:
 
 
 class WeatherResponse(BaseModel):
-    temperature: float = Field(
-        description="The current temperature in celsius for the given location."
+    temperature_celsius: float = Field(
+        description="The current temperature in Celsius for the given location."
+    )
+    temperature_fahrenheit: float = Field(
+        description="The current temperature in Fahrenheit for the given location."
     )
     response: str = Field(
         description="A natural language response to the user's question."
@@ -128,6 +131,9 @@ completion_2 = client.beta.chat.completions.parse(
 # --------------------------------------------------------------
 
 final_response = completion_2.choices[0].message.parsed
-final_response.temperature
+final_response.temperature_celsius
+final_response.temperature_fahrenheit
 final_response.response
+print(f"Temperature: {final_response.temperature_celsius} C")
+print(f"Temperature: {final_response.temperature_fahrenheit} F")
 print(final_response.response)
