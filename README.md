@@ -1,5 +1,12 @@
 # ai-agents-101
-A repository to learn how to build ai agents and then to be able to share and teach
+A repository to learn how to build ai agents and then to be able to share and teach.
+I am following something similar to : https://pub.towardsai.net/i-compared-6-python-ai-agent-frameworks-so-you-dont-have-to-langgraph-vs-crewai-vs-pydanticai-vs-d8a5e6e43262 
+-- OpenAI Agents SDK
+-- LangGraph
+-- Pydantic
+-- Smolagents
+-- Google ADK
+-- CrewAI
 - test commit
 
 ## JavaScript Setup
