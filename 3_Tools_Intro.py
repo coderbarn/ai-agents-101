@@ -93,7 +93,9 @@ def call_function(name, args):
 
 for tool_call in completion.choices[0].message.tool_calls:
     name = tool_call.function.name
+    print(f"Calling function {name} with arguments: {tool_call.function.arguments}")
     tool_args = json.loads(tool_call.function.arguments)
+    
     messages.append(completion.choices[0].message)
 
     result = call_function(name, tool_args)
@@ -105,7 +107,6 @@ for tool_call in completion.choices[0].message.tool_calls:
 # --------------------------------------------------------------
 # Step 4: Supply result and call model again
 # --------------------------------------------------------------
-
 
 class WeatherResponse(BaseModel):
     temperature_celsius: float = Field(
