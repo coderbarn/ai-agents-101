@@ -85,7 +85,6 @@ completion.model_dump()
 # Step 3: Execute get_weather function
 # --------------------------------------------------------------
 
-
 def call_function(name, args):
     if name == "get_weather":
         print(f"Calling get_weather with: {args}")
@@ -98,6 +97,7 @@ for tool_call in completion.choices[0].message.tool_calls:
     messages.append(completion.choices[0].message)
 
     result = call_function(name, tool_args)
+    print(f"tool_call_id: {tool_call.id}")
     messages.append(
         {"role": "tool", "tool_call_id": tool_call.id, "content": json.dumps(result)}
     )
